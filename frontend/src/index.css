@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #007bff;
+  --color-secondary: #6c757d;
+  --animate-fade-in-up: fadeInUp 0.8s ease-out;
+}
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: var(--animate-fade-in-up);
+  }
+
+  .delay-100 {
+    animation-delay: 100ms;
+    animation-fill-mode: backwards;
+  }
+
+  .delay-200 {
+    animation-delay: 200ms;
+    animation-fill-mode: backwards;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media print {
+  @page {
+    margin: 0.5cm;
+    size: auto;
+  }
+
+  body {
+    background-color: white;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Global hide for print */
+  .no-print,
+  header,
+  footer,
+  nav {
+    display: none !important;
+  }
+
+  /* Reset constraints */
+  .min-h-screen {
+    min-height: auto !important;
+  }
+}
