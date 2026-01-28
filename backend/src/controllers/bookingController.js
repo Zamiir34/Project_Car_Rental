@@ -1,12 +1,27 @@
 const asyncHandler = require('express-async-handler');
 const Booking = require('../models/Booking');
 const Car = require('../models/Car');
+const User = require('../models/User');
 
 // @desc    Create new booking
 // @route   POST /api/bookings
 // @access  Private
 const createBooking = asyncHandler(async (req, res) => {
-    const { carId, startDate, endDate, totalPrice } = req.body;
+    const { carId, startDate, endDate, totalPrice, drivingLicense, idCard } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (drivingLicense) user.drivingLicense = drivingLicense;
+    if (idCard) user.idCard = idCard;
+
+    if (drivingLicense || idCard) {
+        await user.save();
+    }
+
+    if (!user.drivingLicense || !user.idCard) {
+        res.status(400);
+        throw new Error('Driving license and ID card are required for booking');
+    }
 
     // Check for overlap
     const overlappingBooking = await Booking.findOne({

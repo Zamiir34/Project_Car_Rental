@@ -6,26 +6,40 @@ import { useAuth } from '../context/AuthContext';
 const BookingPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, updateProfile } = useAuth();
     const [car, setCar] = useState(null);
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [error, setError] = useState('');
+    const [drivingLicense, setDrivingLicense] = useState(user?.drivingLicense || '');
+    const [idCard, setIdCard] = useState(user?.idCard || '');
+
+    useEffect(() => {
+        if (user) {
+            if (user.drivingLicense) setDrivingLicense(user.drivingLicense);
+            if (user.idCard) setIdCard(user.idCard);
+        }
+    }, [user]);
 
     useEffect(() => {
         const fetchCar = async () => {
+            console.log('Fetching car details for ID:', id);
             try {
                 const { data } = await api.get(`/cars/${id}`);
+                console.log('Car details fetched:', data);
                 setCar(data);
             } catch (err) {
-                console.error(err);
+                console.error('Error fetching car:', err);
+                setError('Failed to load car details. Please try again.');
             }
         };
-        fetchCar();
+        if (id) fetchCar();
     }, [id]);
 
     const handleBooking = async (e) => {
         e.preventDefault();
+        console.log('Starting booking process...');
+        setError('');
         try {
             const start = new Date(startDate);
             const end = new Date(endDate);
@@ -38,15 +52,29 @@ const BookingPage = () => {
 
             const totalPrice = days * car.pricePerDay;
 
+            console.log('Sending booking request...', { carId: car._id, startDate, endDate, totalPrice });
             await api.post('/bookings', {
                 carId: car._id,
                 startDate,
                 endDate,
-                totalPrice
+                totalPrice,
+                drivingLicense,
+                idCard
             });
+            console.log('Booking successful. Updating profile...');
+
+            try {
+                await updateProfile();
+                console.log('Profile updated successfully.');
+            } catch (profileErr) {
+                console.error('Error updating profile:', profileErr);
+                // We don't block navigation if profile update fails, but we log it
+            }
+
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Booking failed');
+            console.error('Booking error:', err);
+            setError(err.response?.data?.message || 'Booking failed. Please try again.');
         }
     };
 
@@ -86,6 +114,34 @@ const BookingPage = () => {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary transition"
                             />
                         </div>
+
+                        {!user?.drivingLicense && (
+                            <div className="mb-4">
+                                <label className="block text-gray-700 font-medium mb-2">Driving License</label>
+                                <input
+                                    type="text"
+                                    value={drivingLicense}
+                                    onChange={(e) => setDrivingLicense(e.target.value)}
+                                    required
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary transition"
+                                    placeholder="Enter your driving license number"
+                                />
+                            </div>
+                        )}
+
+                        {!user?.idCard && (
+                            <div className="mb-6">
+                                <label className="block text-gray-700 font-medium mb-2">ID Card</label>
+                                <input
+                                    type="text"
+                                    value={idCard}
+                                    onChange={(e) => setIdCard(e.target.value)}
+                                    required
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary transition"
+                                    placeholder="Enter your ID card number"
+                                />
+                            </div>
+                        )}
                         <button type="submit" className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300">Confirm Booking</button>
                     </form>
                 </div>
