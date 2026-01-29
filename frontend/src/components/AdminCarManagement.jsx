@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 const AdminCarManagement = () => {
     const [cars, setCars] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editCarId, setEditCarId] = useState(null);
     const [formData, setFormData] = useState({
         name: '', type: '', pricePerDay: '', image: '', description: '', transmission: 'Automatic', seats: 4
     });
@@ -36,18 +38,45 @@ const AdminCarManagement = () => {
         }
     };
 
+    const handleEdit = (car) => {
+        setFormData({
+            name: car.name,
+            type: car.type,
+            pricePerDay: car.pricePerDay,
+            image: car.image,
+            description: car.description,
+            transmission: car.transmission,
+            seats: car.seats
+        });
+        setEditCarId(car._id);
+        setIsEditing(true);
+        setShowModal(true);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const { data } = await api.post('/cars', formData);
-            setCars([...cars, data]);
-            setShowModal(false);
-            setFormData({ name: '', type: '', pricePerDay: '', image: '', description: '', transmission: 'Automatic', seats: 4 });
-            toast.success('Car added');
+            if (isEditing) {
+                const { data } = await api.put(`/cars/${editCarId}`, formData);
+                setCars(cars.map(car => car._id === editCarId ? data : car));
+                toast.success('Car updated');
+            } else {
+                const { data } = await api.post('/cars', formData);
+                setCars([...cars, data]);
+                toast.success('Car added');
+            }
+            closeModal();
         } catch (error) {
             console.error(error);
-            toast.error('Failed to add car');
+            toast.error(isEditing ? 'Failed to update car' : 'Failed to add car');
         }
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setIsEditing(false);
+        setEditCarId(null);
+        setFormData({ name: '', type: '', pricePerDay: '', image: '', description: '', transmission: 'Automatic', seats: 4 });
     };
 
     return (
@@ -76,7 +105,13 @@ const AdminCarManagement = () => {
                                 <td className="p-4 font-medium">{car.name}</td>
                                 <td className="p-4">{car.type}</td>
                                 <td className="p-4">${car.pricePerDay}</td>
-                                <td className="p-4">
+                                <td className="p-4 flex gap-2">
+                                    <button
+                                        onClick={() => handleEdit(car)}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition"
+                                    >
+                                        Edit
+                                    </button>
                                     <button
                                         onClick={() => handleDelete(car._id)}
                                         className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm transition"
@@ -93,7 +128,7 @@ const AdminCarManagement = () => {
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto animate-fade-in-up">
-                        <h3 className="text-2xl font-bold mb-6">Add New Car</h3>
+                        <h3 className="text-2xl font-bold mb-6">{isEditing ? 'Edit Car' : 'Add New Car'}</h3>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                             <input
                                 placeholder="Name"
@@ -153,8 +188,10 @@ const AdminCarManagement = () => {
                             </div>
 
                             <div className="flex gap-4 mt-4">
-                                <button type="submit" className="flex-1 bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300">Save Car</button>
-                                <button type="button" onClick={() => setShowModal(false)} className="flex-1 border border-gray-300 text-gray-600 hover:bg-gray-50 font-bold py-3 rounded-lg transition duration-300">Cancel</button>
+                                <button type="submit" className="flex-1 bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300">
+                                    {isEditing ? 'Update Car' : 'Save Car'}
+                                </button>
+                                <button type="button" onClick={closeModal} className="flex-1 border border-gray-300 text-gray-600 hover:bg-gray-50 font-bold py-3 rounded-lg transition duration-300">Cancel</button>
                             </div>
                         </form>
                     </div>
