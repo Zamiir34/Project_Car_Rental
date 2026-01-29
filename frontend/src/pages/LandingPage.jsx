@@ -11,7 +11,7 @@ const LandingPage = () => {
                     <h1 className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight animate-fade-in-up">Experience the Freedom of Drive</h1>
                     <p className="text-xl md:text-2xl mb-10 opacity-90 animate-fade-in-up delay-100">Premium luxury cars at unbeatable prices. No hidden fees, just pure driving pleasure.</p>
                     <div className="flex flex-col md:flex-row justify-center gap-6 animate-fade-in-up delay-200">
-                        <Link to="/cars" className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">Browse Fleet</Link>
+                        <Link to="/cars" className="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300">Browse Car</Link>
                         <a href="#how-it-works" className="border-2 border-white text-white hover:bg-white hover:text-primary font-bold py-3 px-8 rounded-lg text-lg transition duration-300">How It Works</a>
                     </div>
                 </div>

@@ -1,9 +1,14 @@
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import LandingPage from './pages/LandingPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 import CarListingPage from './pages/CarListingPage';
 import BookingPage from './pages/BookingPage';
 import UserDashboard from './pages/UserDashboard';
@@ -18,10 +23,15 @@ function App() {
     <AuthProvider>
       <div className="min-h-screen flex flex-col bg-gray-50 font-sans text-gray-900">
         <ToastContainer position="top-right" autoClose={3000} />
+        <ScrollToTop />
         <Header />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/cars" element={<CarListingPage />} />
             <Route path="/book/:id" element={<BookingPage />} />
             <Route path="/dashboard" element={<UserDashboard />} />

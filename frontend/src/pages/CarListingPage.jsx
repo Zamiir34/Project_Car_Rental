@@ -41,7 +41,7 @@ const CarListingPage = () => {
                 </svg>
                 Back
             </button>
-            <h2 className="text-3xl font-bold mb-6 text-gray-800">Our Fleet</h2>
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">Our Cars</h2>
             <div className="bg-white p-4 rounded-lg shadow-sm mb-8 flex flex-col md:flex-row gap-4 items-center border border-gray-100">
                 <input name="type" placeholder="Type (e.g. SUV)" onChange={handleFilterChange} className="w-full md:flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" />
                 <input name="minPrice" placeholder="Min Price" type="number" onChange={handleFilterChange} className="w-full md:w-32 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-primary" />
